@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import type { Directive } from 'vue'
-import { links, projects, skills } from './data'
+import { internship, links, projects, skillGroups } from './data'
 import joePhoto from './assets/images/joe.jpeg'
 
 const scrolled = ref(false)
@@ -18,7 +18,6 @@ onMounted(() => {
 })
 onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
-// Fade/slide elements in the first time they enter the viewport.
 const hidden = ['opacity-0', 'translate-y-6']
 const motion = ['transition-all', 'duration-700', 'ease-out', 'motion-reduce:transition-none']
 const vReveal: Directive<HTMLElement, number | undefined> = {
@@ -30,7 +29,6 @@ const vReveal: Directive<HTMLElement, number | undefined> = {
         if (!entry?.isIntersecting) return
         el.classList.remove(...hidden)
         io.disconnect()
-        // Drop the reveal transition afterwards so it can't interfere with hover effects.
         setTimeout(() => {
           el.classList.remove(...motion)
           el.style.transitionDelay = ''
@@ -70,9 +68,12 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame'
         <span>J</span><span class="mb-1 size-1.75 rounded-full bg-flame"></span>
       </a>
       <nav aria-label="Primary">
-        <ul class="m-0 flex list-none items-center gap-5 p-0 text-sm sm:gap-8">
-          <li>
+        <ul class="m-0 flex list-none items-center gap-4 p-0 text-sm sm:gap-8">
+          <li class="max-sm:hidden">
             <a href="#about" class="text-muted no-underline transition-colors hover:text-fg">About</a>
+          </li>
+          <li>
+            <a href="#experience" class="text-muted no-underline transition-colors hover:text-fg">Experience</a>
           </li>
           <li>
             <a href="#projects" class="text-muted no-underline transition-colors hover:text-fg">Projects</a>
@@ -174,22 +175,67 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame'
             and contribute to meaningful projects. Outside of coding, I enjoy traveling and keeping
             a healthy lifestyle through the gym.
           </p>
-          <ul class="mt-3 flex list-none flex-wrap gap-2 p-0" aria-label="Skills">
-            <li
-              v-for="s in skills"
-              :key="s"
-              class="rounded-md border border-line bg-brand/6 px-3 py-1.5 font-mono text-xs text-brand"
-            >
-              {{ s }}
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience" :class="[wrap, 'py-24']">
+      <p v-reveal :class="eyebrow">02 / Experience</p>
+      <div v-reveal class="mb-12 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+        <h2 class="text-[clamp(1.9rem,4vw,3rem)] leading-[1.12] font-semibold tracking-tight">
+          {{ internship.role }}
+          <span class="text-brand">@{{ internship.company }}</span>
+        </h2>
+        <p class="font-mono text-sm text-muted">
+          {{ internship.department }} <span class="text-flame">/</span> {{ internship.duration }}
+        </p>
+      </div>
+      <p v-reveal class="max-w-180 text-lg text-muted">{{ internship.summary }}</p>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        <article
+          v-for="(h, i) in internship.highlights"
+          :key="h.title"
+          v-reveal="i * 80"
+          class="rounded-2xl border border-line bg-raise/60 p-7"
+        >
+          <span class="font-mono text-sm text-flame">{{ String(i + 1).padStart(2, '0') }}</span>
+          <h3 class="mt-3 mb-5 text-xl leading-snug font-semibold tracking-tight">{{ h.title }}</h3>
+          <ul class="m-0 grid list-none gap-3 p-0 text-[0.95rem] text-muted">
+            <li v-for="pt in h.points" :key="pt" class="flex gap-3">
+              <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true"></span>
+              <span>{{ pt }}</span>
             </li>
           </ul>
-        </div>
+        </article>
+      </div>
+
+      <div v-reveal class="mt-16">
+        <h3 class="mb-6 font-mono text-sm tracking-widest text-flame uppercase">Technical skills</h3>
+        <dl class="m-0 grid gap-x-10 gap-y-5 md:grid-cols-2">
+          <div
+            v-for="g in skillGroups"
+            :key="g.label"
+            class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line-soft pb-5"
+          >
+            <dt class="w-28 shrink-0 text-sm text-muted">{{ g.label }}</dt>
+            <dd class="m-0 flex flex-wrap gap-2">
+              <span
+                v-for="s in g.items"
+                :key="s"
+                class="rounded-md border border-line bg-brand/6 px-3 py-1.5 font-mono text-xs text-brand"
+                >{{ s }}</span
+              >
+            </dd>
+          </div>
+        </dl>
       </div>
     </section>
 
     <!-- PROJECTS -->
     <section id="projects" :class="[wrap, 'py-24']">
-      <p v-reveal :class="eyebrow">02 / Projects</p>
+      <p v-reveal :class="eyebrow">03 / Projects</p>
       <h2
         v-reveal
         class="mb-12 text-[clamp(1.9rem,4vw,3rem)] leading-[1.12] font-semibold tracking-tight"
@@ -254,7 +300,7 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame'
     class="relative border-t border-line bg-[radial-gradient(ellipse_60%_80%_at_50%_120%,rgb(2_151_222/0.28),transparent_70%)] pt-28 pb-10 text-center"
   >
     <div :class="wrap">
-      <p v-reveal :class="eyebrow">03 / Contact</p>
+      <p v-reveal :class="eyebrow">04 / Contact</p>
       <h2 v-reveal class="text-[clamp(2.4rem,7vw,5rem)] leading-[1.12] font-semibold tracking-tighter">
         Let's build something <span class="text-flame">together.</span>
       </h2>

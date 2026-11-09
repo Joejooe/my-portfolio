@@ -42,4 +42,47 @@ export const links = {
   linkedin: 'https://www.linkedin.com/in/joe-abednego-273818383/',
 }
 
-export const skills = ['Vue', 'Tailwindcss', 'JavaScript', 'HTML & CSS', 'React', 'REST APIs', 'Responsive design']
+export const internship = {
+  role: 'Front-End Developer Intern',
+  company: 'Superspring',
+  department: 'Products & Solutions Department',
+  duration: '1-Year Internship',
+  summary:
+    'Contributed to the development, maintenance, and improvement of various company websites and web applications. Worked primarily with Vue.js, JavaScript, TypeScript, and Tailwind CSS while collaborating with backend developers on API integration and application functionality.',
+  highlights: [
+    {
+      title: 'Driver App (Progressive Web Application)',
+      points: [
+        'Developed a logistics-focused PWA for a collaborative project between two companies.',
+        'Implemented order management and map-based delivery route visualization.',
+        'Built features for delivery photo documentation and operational expense reporting.',
+        'Developed truck maintenance and routine inspection tracking features.',
+      ],
+    },
+    {
+      title: 'Event Management System',
+      points: [
+        'Developed an event registration website for corporate gatherings and business events.',
+        'Built an accompanying admin dashboard for QR code ticket scanning and attendee validation.',
+        'Implemented attendance tracking to monitor registered attendees and event participation.',
+      ],
+    },
+    {
+      title: 'Company Website Improvements',
+      points: [
+        "Revamped the existing Top-Up section of the company's website.",
+        'Developed a new product showcase section for a product launch.',
+        "Fixed and improved the company's Linktree-style landing page.",
+      ],
+    },
+  ],
+}
+
+export const skillGroups = [
+  { label: 'Frameworks', items: ['Vue.js', 'Nuxt.js'] },
+  { label: 'Languages', items: ['JavaScript', 'TypeScript'] },
+  { label: 'Styling', items: ['Tailwind CSS'] },
+  { label: 'Integration', items: ['REST API Integration', 'Frontend-Backend Collaboration'] },
+  { label: 'Development', items: ['Progressive Web Apps (PWA)', 'Responsive Web Design'] },
+  { label: 'Tools', items: ['Git', 'Bun', 'Vite'] },
+]
