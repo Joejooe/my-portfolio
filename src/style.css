@@ -8,33 +8,18 @@
   --color-fg: #fefefe; /* main text */
   /* ===== derived (don't need to touch) ===== */
   --color-raise: color-mix(in srgb, var(--color-brand) 10%, var(--color-ink)); /* cards */
-  --color-deep: color-mix(in srgb, var(--color-brand) 18%, var(--color-ink)); /* gradients */
   --color-muted: color-mix(in srgb, var(--color-fg) 62%, var(--color-ink)); /* secondary text */
   /* flame lightened for small text so it stays readable (WCAG AA) on dark backgrounds */
   --color-flame-soft: color-mix(in srgb, var(--color-flame) 72%, var(--color-fg));
+  /* flame deepened for filled buttons so white text on it passes WCAG AA (5:1) */
+  --color-flame-fill: color-mix(in srgb, var(--color-flame) 90%, black);
+  --color-flame-fill-hover: color-mix(in srgb, var(--color-flame) 80%, black);
   --color-line: color-mix(in srgb, var(--color-brand) 22%, transparent);
   --color-line-soft: color-mix(in srgb, var(--color-fg) 8%, transparent);
 
   --font-sans: 'Space Grotesk', system-ui, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
 
-  --animate-drift: drift 10s ease-in-out infinite alternate;
-  --animate-pulse-ring: pulse-ring 2s infinite;
-
-  @keyframes drift {
-    to {
-      translate: -40px calc(-50% + 30px);
-      scale: 1.08;
-    }
-  }
-  @keyframes pulse-ring {
-    0% {
-      box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-flame) 60%, transparent);
-    }
-    100% {
-      box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-flame) 0%, transparent);
-    }
-  }
 }
 
 @layer base {

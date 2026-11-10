@@ -1,3 +1,7 @@
+import gpsShot from './assets/images/work/gps.png'
+import dekkaLiveShot from './assets/images/work/dekkalive.png'
+import bioShot from './assets/images/work/bio.png'
+
 export interface Project {
   title: string
   summary: string
@@ -5,6 +9,12 @@ export interface Project {
   context?: string
   live: { label: string; href: string }
   repo?: { label: string; href: string }
+  /** screenshot of the live site */
+  image?: string
+  /** browser window for desktop sites, phone for mobile-first pages */
+  frame?: 'browser' | 'phone'
+  /** short URL shown in the frame's address bar */
+  url?: string
 }
 
 export const projects: Project[] = [
@@ -15,6 +25,9 @@ export const projects: Project[] = [
     tags: ['Vue.js', 'Tailwind CSS', 'REST API'],
     context: 'Built at Superspring',
     live: { label: 'Visit site', href: 'https://gps.id/custgathering/' },
+    image: gpsShot,
+    frame: 'browser',
+    url: 'gps.id/custgathering',
   },
   {
     title: 'Dekka Live Product Showcase',
@@ -23,6 +36,9 @@ export const projects: Project[] = [
     tags: ['Vue.js', 'Tailwind CSS', 'Responsive'],
     context: 'Built at Superspring',
     live: { label: 'Visit site', href: 'https://dekka.id/dekkalive' },
+    image: dekkaLiveShot,
+    frame: 'browser',
+    url: 'dekka.id/dekkalive',
   },
   {
     title: 'Dekka Bio Link Page',
@@ -31,6 +47,9 @@ export const projects: Project[] = [
     tags: ['HTML', 'JavaScript', 'Tailwind CSS'],
     context: 'Built at Superspring',
     live: { label: 'Visit site', href: 'https://www.dekka.id/bio/' },
+    image: bioShot,
+    frame: 'phone',
+    url: 'dekka.id/bio',
   },
   // Personal projects (hidden for now)
   // {
@@ -67,6 +86,12 @@ export const links = {
   github: 'https://github.com/Joejooe',
   linkedin: 'https://www.linkedin.com/in/joe-abednego-273818383/',
 }
+
+export const contacts = [
+  { label: 'WhatsApp', handle: '+62 812 7445 656', href: links.whatsapp, icon: 'fa-whatsapp' },
+  { label: 'GitHub', handle: 'github.com/Joejooe', href: links.github, icon: 'fa-github' },
+  { label: 'LinkedIn', handle: 'in/joe-abednego', href: links.linkedin, icon: 'fa-linkedin' },
+]
 
 export const internship = {
   role: 'Front-End Developer Intern',

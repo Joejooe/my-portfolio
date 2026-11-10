@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import type { Directive } from 'vue'
-import { internship, links, projects, skillGroups } from './data'
+import { contacts, internship, projects, skillGroups } from './data'
+import SiteFrame from './components/SiteFrame.vue'
 import joePhoto from './assets/images/joe.jpeg'
 
 const scrolled = ref(false)
-const openCard = ref<number | null>(null)
 const menuOpen = ref(false)
 const navItems = [
   { href: '#about', label: 'About' },
   { href: '#experience', label: 'Experience' },
   { href: '#projects', label: 'Projects' },
 ]
+// which section is in the middle of the screen, for the red underline in the nav
+const active = ref('')
+let spy: IntersectionObserver | undefined
 
 const year = new Date().getFullYear()
 
@@ -32,15 +35,35 @@ onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('keydown', onKey)
   desktop.addEventListener('change', onBreakpoint)
+
+  spy = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) if (e.isIntersecting) active.value = e.target.id ? `#${e.target.id}` : ''
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  )
+  // the hero (first section) clears the underline; the rest map to nav links
+  const hero = document.querySelector('#top > section')
+  if (hero) spy.observe(hero)
+  for (const id of ['about', 'experience', 'projects', 'contact']) {
+    const el = document.getElementById(id)
+    if (el) spy.observe(el)
+  }
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('keydown', onKey)
   desktop.removeEventListener('change', onBreakpoint)
+  spy?.disconnect()
 })
 
-const hidden = ['opacity-0', 'translate-y-6']
-const motion = ['transition-all', 'duration-700', 'ease-out', 'motion-reduce:transition-none']
+const hidden = ['opacity-0', 'translate-y-3']
+const motion = [
+  'transition-[opacity,translate]',
+  'duration-500',
+  'ease-[cubic-bezier(0.22,1,0.36,1)]',
+  'motion-reduce:transition-none',
+]
 const vReveal: Directive<HTMLElement, number | undefined> = {
   mounted(el, { value }) {
     el.classList.add(...hidden, ...motion)
@@ -53,7 +76,7 @@ const vReveal: Directive<HTMLElement, number | undefined> = {
         setTimeout(() => {
           el.classList.remove(...motion)
           el.style.transitionDelay = ''
-        }, 900 + (value ?? 0))
+        }, 600 + (value ?? 0))
       },
       { threshold: 0.15 },
     )
@@ -62,16 +85,19 @@ const vReveal: Directive<HTMLElement, number | undefined> = {
 }
 
 const wrap = 'mx-auto w-full max-w-280 px-5 sm:px-6'
-const eyebrow = 'mb-5 font-mono text-sm uppercase tracking-widest text-flame-soft'
-const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-soft'
+const section = 'py-20 md:py-32'
+const label = 'mb-6 font-mono text-sm text-brand'
+const h2 = 'text-[clamp(1.75rem,3.6vw,2.5rem)] leading-[1.15] font-medium tracking-[-0.02em]'
+const btn =
+  'inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-medium no-underline transition-[background-color,border-color,scale] duration-150 active:scale-[0.98]'
+const textLink =
+  'inline-flex items-center gap-2 border-b border-current pb-0.5 font-medium text-brand no-underline transition-colors hover:text-fg'
+
+// the hero shows the first live project next to the portrait
+const featured = projects[0]!
 </script>
 
 <template>
-  <div
-    class="pointer-events-none fixed inset-0 -z-10 bg-size-[72px_72px] bg-[linear-gradient(var(--color-line-soft)_1px,transparent_1px),linear-gradient(90deg,var(--color-line-soft)_1px,transparent_1px)] mask-[radial-gradient(ellipse_80%_60%_at_50%_0%,#000_20%,transparent_75%)]"
-    aria-hidden="true"
-  ></div>
-
   <header
     class="fixed inset-x-0 top-0 z-10 border-b transition-colors duration-300"
     :class="
@@ -83,7 +109,7 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-
     <div :class="[wrap, 'flex h-17 items-center justify-between']">
       <a
         href="#top"
-        class="flex items-end gap-0.5 text-3xl leading-none font-bold text-brand no-underline"
+        class="flex items-end gap-0.5 text-3xl leading-none font-semibold text-brand no-underline"
         aria-label="Joe Abednego - home"
       >
         <span>J</span><span class="mb-1 size-1.75 rounded-full bg-flame"></span>
@@ -91,12 +117,24 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-
       <nav aria-label="Primary" class="max-sm:hidden">
         <ul class="m-0 flex list-none items-center gap-8 p-0 text-sm">
           <li v-for="n in navItems" :key="n.href">
-            <a :href="n.href" class="text-muted no-underline transition-colors hover:text-fg">{{ n.label }}</a>
+            <a
+              :href="n.href"
+              class="relative no-underline transition-colors hover:text-fg"
+              :class="active === n.href ? 'text-fg' : 'text-muted'"
+              :aria-current="active === n.href ? 'location' : undefined"
+            >
+              {{ n.label }}
+              <span
+                class="absolute inset-x-0 -bottom-1.5 h-0.5 origin-left rounded-full bg-flame transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                :class="active === n.href ? 'scale-x-100' : 'scale-x-0'"
+                aria-hidden="true"
+              ></span>
+            </a>
           </li>
           <li>
             <a
               href="#contact"
-              class="rounded-full border border-brand px-4.5 py-2 text-brand no-underline transition-colors hover:bg-brand hover:text-ink"
+              class="rounded-lg border border-line px-4 py-2 text-fg no-underline transition-colors hover:border-flame-fill hover:bg-flame-fill"
               >Contact</a
             >
           </li>
@@ -113,16 +151,16 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-
       >
         <span class="relative block h-3.5 w-5.5" aria-hidden="true">
           <span
-            class="absolute left-0 h-0.5 w-full rounded-full bg-current transition-all duration-300"
-            :class="menuOpen ? 'top-1.5 rotate-45' : 'top-0'"
+            class="absolute top-1.5 left-0 h-0.5 w-full rounded-full bg-current transition-transform duration-200"
+            :class="menuOpen ? 'rotate-45' : '-translate-y-1.5'"
           ></span>
           <span
-            class="absolute top-1.5 left-0 h-0.5 w-full rounded-full bg-current transition-opacity duration-300"
+            class="absolute top-1.5 left-0 h-0.5 w-full rounded-full bg-current transition-opacity duration-200"
             :class="menuOpen ? 'opacity-0' : ''"
           ></span>
           <span
-            class="absolute left-0 h-0.5 w-full rounded-full bg-current transition-all duration-300"
-            :class="menuOpen ? 'top-1.5 -rotate-45' : 'top-3'"
+            class="absolute top-1.5 left-0 h-0.5 w-full rounded-full bg-current transition-transform duration-200"
+            :class="menuOpen ? '-rotate-45' : 'translate-y-1.5'"
           ></span>
         </span>
       </button>
@@ -140,15 +178,18 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-
           <li v-for="n in navItems" :key="n.href">
             <a
               :href="n.href"
-              class="block border-b border-line-soft py-3.5 text-lg text-fg no-underline"
+              class="flex items-center justify-between border-b border-line-soft py-3.5 text-lg text-fg no-underline"
+              :aria-current="active === n.href ? 'location' : undefined"
               @click="menuOpen = false"
-              >{{ n.label }}</a
             >
+              {{ n.label }}
+              <span v-if="active === n.href" class="size-1.5 rounded-full bg-flame" aria-hidden="true"></span>
+            </a>
           </li>
           <li class="pt-4">
             <a
               href="#contact"
-              class="block rounded-full bg-brand py-3 text-center font-semibold text-ink no-underline"
+              class="block rounded-lg bg-flame-fill py-3 text-center font-medium text-fg no-underline transition-colors hover:bg-flame-fill-hover"
               @click="menuOpen = false"
               >Contact</a
             >
@@ -163,190 +204,143 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-
     <section
       :class="[
         wrap,
-        'relative grid min-h-svh items-center gap-10 pt-24 pb-16 md:grid-cols-[1.35fr_1fr] md:gap-12 md:pt-28',
+        'grid items-center gap-12 pt-28 pb-20 md:min-h-svh md:grid-cols-[1fr_1.15fr] md:gap-12 md:pt-32 lg:gap-16',
       ]"
     >
-      <div
-        class="absolute top-1/2 right-[-40%] -z-10 size-120 -translate-y-1/2 animate-drift rounded-full bg-[radial-gradient(circle,color-mix(in_srgb,var(--color-brand)_35%,transparent),transparent_65%)] blur-3xl md:right-[-10%] md:size-160"
-        aria-hidden="true"
-      ></div>
-
       <div>
-        <p
-          class="mb-7 inline-flex items-center gap-2.5 rounded-full border border-flame/35 bg-flame/7 px-3.5 py-1.5 font-mono text-xs tracking-wider text-flame-soft uppercase"
-        >
-          <span class="size-2 animate-pulse-ring rounded-full bg-flame"></span> Open to internships
+        <p class="mb-8 flex items-center gap-2 font-mono text-sm text-muted">
+          <span class="size-2 rounded-full bg-flame" aria-hidden="true"></span> Open to internships
         </p>
-        <h1 class="flex flex-col gap-2.5">
-          <span class="font-mono text-base font-normal text-brand">Hello, my name is</span>
-          <span class="text-[clamp(2.75rem,12vw,7rem)] leading-[0.95] font-bold tracking-tighter">
+        <h1 class="flex flex-col gap-4">
+          <span class="font-mono text-sm font-normal text-brand">Front-end developer · CS student</span>
+          <span class="text-[clamp(2.5rem,7vw,4rem)] leading-[1.02] font-medium tracking-[-0.03em]">
             Joe<br />Abednego<span class="text-flame-soft">.</span>
           </span>
         </h1>
-        <p class="mt-7 max-w-136 text-lg text-muted">
-          Computer Science student at <strong class="font-medium text-fg">BINUS University</strong>,
-          learning web development and passionate about building responsive, accessible websites -
-          one personal project at a time.
+        <p class="mt-6 max-w-xl text-lg text-muted">
+          Computer Science student at <span class="text-fg">BINUS University</span>. I spent a year at
+          <span class="text-fg">Superspring</span> building live websites with Vue, TypeScript and
+          Tailwind CSS.
         </p>
-        <div class="mt-9 flex flex-wrap gap-3.5 max-[400px]:flex-col">
-          <a
-            href="#projects"
-            class="inline-flex items-center justify-center gap-2.5 rounded-full bg-brand px-6.5 py-3.5 text-[0.95rem] font-semibold text-ink no-underline transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_-8px_color-mix(in_srgb,var(--color-brand)_70%,transparent)]"
-          >
+        <div class="mt-8 flex flex-wrap gap-3 max-[400px]:flex-col">
+          <a href="#projects" :class="[btn, 'bg-flame-fill text-fg hover:bg-flame-fill-hover']">
             See my work <span aria-hidden="true">↓</span>
           </a>
-          <a
-            href="#about"
-            class="inline-flex items-center justify-center gap-2.5 rounded-full border border-line px-6.5 py-3.5 text-[0.95rem] font-semibold text-fg no-underline transition-colors hover:border-flame hover:text-flame-soft"
-          >
+          <a href="#about" :class="[btn, 'border border-line text-fg hover:border-brand/50 hover:bg-fg/5']">
             About me
           </a>
         </div>
       </div>
 
-      <div class="relative w-[min(72%,280px)] max-md:order-first max-md:mx-auto md:w-[min(100%,360px)] md:justify-self-center">
-        <div
-          class="aspect-4/5 overflow-hidden rounded-[28px] border border-line bg-linear-to-br from-deep to-raise shadow-[18px_18px_0_-2px_color-mix(in_srgb,var(--color-brand)_16%,transparent),0_30px_80px_-30px_color-mix(in_srgb,var(--color-brand)_50%,transparent)]"
+      <div class="relative pb-10 pl-6 sm:pb-12 sm:pl-12">
+        <a
+          :href="featured.live.href"
+          target="_blank"
+          rel="noopener"
+          class="block rounded-xl"
+          :aria-label="`${featured.title}, live at ${featured.url}`"
+        >
+          <SiteFrame
+            :image="featured.image!"
+            :url="featured.url!"
+            :alt="`Screenshot of ${featured.title}`"
+            eager
+          />
+        </a>
+        <figure
+          class="absolute bottom-0 left-0 m-0 w-[34%] max-w-48 overflow-hidden rounded-2xl border-4 border-ink shadow-[0_16px_32px_-12px_rgb(0_0_0/0.6)]"
         >
           <img
             :src="joePhoto"
             alt="Portrait of Joe Abednego"
-            class="block size-full object-cover object-top"
+            class="block aspect-4/5 w-full object-cover object-top"
           />
-        </div>
-        <span
-          class="absolute top-6 -left-2 rounded-full border border-line bg-ink/90 px-3.5 py-1.5 font-mono text-xs whitespace-nowrap text-brand backdrop-blur-sm sm:-left-6"
-          >3rd year · CS</span
-        >
-        <span
-          class="absolute -right-2 bottom-8 rounded-full border border-flame/40 bg-ink/90 px-3.5 py-1.5 font-mono text-xs whitespace-nowrap text-flame-soft backdrop-blur-sm sm:-right-5"
-          >Vue ✦ Front-end</span
-        >
+        </figure>
       </div>
     </section>
 
     <!-- ABOUT -->
-    <section id="about" :class="[wrap, 'py-16 md:py-24']">
-      <p v-reveal :class="eyebrow">01 / About</p>
+    <section id="about" :class="[wrap, section]">
+      <p v-reveal :class="label">01 / About</p>
       <div class="grid items-start gap-8 md:grid-cols-[1fr_1.1fr] md:gap-16">
-        <h2 v-reveal class="text-[clamp(1.9rem,4vw,3rem)] leading-[1.12] font-semibold tracking-tight">
-          Building interactive, user-friendly web experiences.
-        </h2>
-        <div v-reveal="120" class="grid gap-4.5 text-muted">
+        <h2 v-reveal :class="h2">Building interactive, user-friendly web experiences</h2>
+        <div v-reveal="60" class="grid gap-4 text-muted">
           <p>
-            Hi! I'm Joe, a third-year Computer Science student at BINUS University who loves
-            building interactive and user-friendly web experiences. Vue is my main framework, and I'm also learning React
-            and exploring modern front-end development practices.
+            Hi! I'm Joe, a third-year Computer Science student at BINUS University who loves building
+            interactive and user-friendly web experiences. Vue is my main framework, and I'm also
+            learning React and exploring modern front-end development practices.
           </p>
           <p>
-            I'm looking for internship opportunities where I can grow through hands-on experience
-            and contribute to meaningful projects. Outside of coding, I enjoy traveling and keeping
-            a healthy lifestyle through the gym.
+            I'm looking for internship opportunities where I can grow through hands-on experience and
+            contribute to meaningful projects. Outside of coding, I enjoy traveling and keeping a
+            healthy lifestyle through the gym.
           </p>
         </div>
       </div>
     </section>
 
     <!-- EXPERIENCE -->
-    <section id="experience" :class="[wrap, 'py-16 md:py-24']">
-      <p v-reveal :class="eyebrow">02 / Experience</p>
-      <div v-reveal class="mb-8 flex flex-wrap items-end md:mb-12 justify-between gap-x-8 gap-y-3">
-        <h2 class="text-[clamp(1.9rem,4vw,3rem)] leading-[1.12] font-semibold tracking-tight">
-          {{ internship.role }}
-          <span class="text-brand">@{{ internship.company }}</span>
-        </h2>
-        <p class="font-mono text-sm text-muted">
-          {{ internship.department }} <span class="text-flame-soft">/</span> <span class="whitespace-nowrap">{{ internship.duration }}</span>
-        </p>
-      </div>
-      <p v-reveal class="max-w-180 text-lg text-muted">{{ internship.summary }}</p>
+    <section id="experience" :class="[wrap, section]">
+      <p v-reveal :class="label">02 / Experience</p>
+      <div class="grid items-start gap-12 md:grid-cols-[1fr_1.5fr] md:gap-16">
+        <div v-reveal class="md:sticky md:top-28">
+          <h2 :class="h2">
+            {{ internship.role }}
+            <span class="text-brand">at {{ internship.company }}</span>
+          </h2>
+          <p class="mt-4 font-mono text-sm text-muted">
+            {{ internship.department }}<br />{{ internship.duration }}
+          </p>
+          <p class="mt-6 text-muted">{{ internship.summary }}</p>
+        </div>
 
-      <div class="mt-10 grid items-start gap-4 md:mt-12 md:grid-cols-2 md:gap-6">
-        <article
-          v-for="(h, i) in internship.highlights"
-          :key="h.title"
-          v-reveal="i * 80"
-          class="group relative overflow-hidden rounded-2xl border bg-raise/60 transition-colors duration-300 hover:border-flame/50"
-          :class="[i === 0 ? 'md:col-span-2' : '', openCard === i ? 'border-flame/50' : 'border-line']"
-        >
-          <span
-            class="absolute inset-y-0 left-0 w-0.75 origin-top bg-flame transition-transform duration-300 group-hover:scale-y-100"
-            :class="openCard === i ? 'scale-y-100' : 'scale-y-0'"
-            aria-hidden="true"
-          ></span>
-
-          <div v-if="i === 0" class="p-5 sm:p-7 md:p-9">
-            <span class="font-mono text-sm text-flame-soft">{{ String(i + 1).padStart(2, '0') }}</span>
-            <h3 class="mt-3 mb-6 text-2xl leading-snug font-semibold tracking-tight md:text-3xl">
-              {{ h.title }}
-            </h3>
-            <ul class="m-0 grid list-none gap-3 p-0 text-[0.95rem] text-muted md:grid-cols-2 md:gap-x-10">
-              <li v-for="pt in h.points" :key="pt" class="flex gap-3">
-                <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true"></span>
-                <span>{{ pt }}</span>
-              </li>
-            </ul>
-            <p v-if="h.note" class="mt-6 mb-0 text-[0.95rem] text-muted">{{ h.note }}</p>
-            <a
-              v-if="h.link"
-              :href="h.link.href"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="mt-4 inline-flex items-center gap-2 font-medium text-flame-soft no-underline hover:underline"
-            >
-              {{ h.link.label }} <span aria-hidden="true">↗</span>
-            </a>
-          </div>
-
-          <template v-else>
-            <button
-              type="button"
-              class="flex w-full cursor-pointer items-center gap-4 px-5 py-5 text-left sm:px-7 sm:py-6"
-              :aria-expanded="openCard === i"
-              :aria-controls="`exp-panel-${i}`"
-              @click="openCard = openCard === i ? null : i"
-            >
-              <span class="font-mono text-sm text-flame-soft">{{ String(i + 1).padStart(2, '0') }}</span>
-              <h3 class="m-0 flex-1 text-xl leading-snug font-semibold tracking-tight">{{ h.title }}</h3>
-              <span
-                class="text-xl text-brand transition-transform duration-300"
-                :class="openCard === i ? 'rotate-180' : ''"
-                aria-hidden="true"
-                >⌄</span
-              >
-            </button>
-            <div
-              :id="`exp-panel-${i}`"
-              class="grid transition-[grid-template-rows] duration-300 ease-out"
-              :class="openCard === i ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
-            >
-              <div class="overflow-hidden">
-                <ul class="m-0 grid list-none gap-3 px-5 pt-1 pb-6 sm:px-7 sm:pb-7 text-[0.95rem] text-muted">
-                  <li v-for="pt in h.points" :key="pt" class="flex gap-3">
-                    <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true"></span>
-                    <span>{{ pt }}</span>
-                  </li>
-                </ul>
-              </div>
+        <ol class="m-0 list-none border-t border-line-soft p-0">
+          <li
+            v-for="(h, i) in internship.highlights"
+            :key="h.title"
+            v-reveal="i * 60"
+            class="group relative grid gap-4 border-b border-line-soft py-8 sm:grid-cols-[3rem_1fr]"
+          >
+            <span
+              class="absolute inset-x-0 -top-px h-0.5 origin-left scale-x-0 bg-flame transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
+              aria-hidden="true"
+            ></span>
+            <span class="font-mono text-sm text-muted tabular-nums transition-colors group-hover:text-flame-soft sm:pt-1.5">
+              {{ String(i + 1).padStart(2, '0') }}
+            </span>
+            <div>
+              <h3 class="text-xl leading-snug font-medium">{{ h.title }}</h3>
+              <ul class="m-0 mt-4 grid list-none gap-2 p-0 text-muted">
+                <li v-for="pt in h.points" :key="pt" class="flex gap-3">
+                  <span class="mt-2.5 size-1 shrink-0 rounded-full bg-muted" aria-hidden="true"></span>
+                  <span>{{ pt }}</span>
+                </li>
+              </ul>
+              <template v-if="h.note && h.link">
+                <p class="mt-6 text-muted">{{ h.note }}</p>
+                <a :href="h.link.href" target="_blank" rel="noopener noreferrer" :class="[textLink, 'mt-2']">
+                  {{ h.link.label }} <span aria-hidden="true">↗</span>
+                </a>
+              </template>
             </div>
-          </template>
-        </article>
+          </li>
+        </ol>
       </div>
 
-      <div v-reveal class="mt-12 md:mt-16">
-        <h3 class="mb-6 font-mono text-sm tracking-widest text-flame-soft uppercase">Technical skills</h3>
-        <dl class="m-0 grid gap-x-10 gap-y-5 md:grid-cols-2">
+      <div v-reveal class="mt-20 md:mt-24">
+        <h3 :class="label">Technical skills</h3>
+        <dl class="m-0 border-t border-line-soft">
           <div
             v-for="g in skillGroups"
             :key="g.label"
-            class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line-soft pb-5"
+            class="grid gap-3 border-b border-line-soft py-4 sm:grid-cols-[12rem_1fr] sm:items-center"
           >
-            <dt class="w-28 shrink-0 pt-1.5 text-sm text-muted">{{ g.label }}</dt>
-            <dd class="m-0 flex min-w-0 flex-1 flex-wrap gap-2">
+            <dt class="text-muted">{{ g.label }}</dt>
+            <dd class="m-0 flex flex-wrap gap-2">
               <span
                 v-for="s in g.items"
                 :key="s"
-                class="rounded-md border border-line bg-brand/6 px-3 py-1.5 font-mono text-xs text-brand"
+                class="rounded-md border border-line-soft bg-fg/4 px-2.5 py-1 font-mono text-xs text-fg"
                 >{{ s }}</span
               >
             </dd>
@@ -356,52 +350,72 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-
     </section>
 
     <!-- PROJECTS -->
-    <section id="projects" :class="[wrap, 'py-16 md:py-24']">
-      <p v-reveal :class="eyebrow">03 / Projects</p>
-      <h2
-        v-reveal
-        class="mb-8 text-[clamp(1.9rem,4vw,3rem)] md:mb-12 leading-[1.12] font-semibold tracking-tight"
-      >
-        Selected work
-      </h2>
+    <section id="projects" :class="[wrap, section]">
+      <p v-reveal :class="label">03 / Projects</p>
+      <div v-reveal class="mb-12 grid gap-4 md:mb-16 md:grid-cols-[1fr_1.1fr] md:items-end md:gap-16">
+        <h2 :class="h2">Selected work</h2>
+        <p class="text-muted">
+          Live websites I built and improved during my internship at Superspring. Each one is in
+          production today, so you can open it and click around.
+        </p>
+      </div>
 
-      <ol class="m-0 list-none border-t border-line-soft p-0">
-        <li v-for="(p, i) in projects" :key="p.title" v-reveal="i * 80" class="border-b border-line-soft">
-          <div
-            class="group relative grid gap-x-8 gap-y-4 px-1 py-8 md:gap-y-6 md:py-10 transition-[background-color,padding] duration-300 hover:bg-linear-to-r hover:from-brand/8 hover:to-transparent hover:to-70% hover:pl-3 md:grid-cols-[4rem_1fr_auto] md:px-4 md:hover:pl-7"
+      <ol class="m-0 grid list-none gap-20 p-0 md:gap-24">
+        <li
+          v-for="(p, i) in projects"
+          :key="p.title"
+          v-reveal
+          class="group/row grid items-center gap-8 md:grid-cols-12 md:gap-12"
+        >
+          <a
+            v-if="p.image"
+            :href="p.live.href"
+            target="_blank"
+            rel="noopener"
+            tabindex="-1"
+            aria-hidden="true"
+            class="group block md:col-span-7"
           >
-            <span
-              class="absolute inset-y-0 left-0 w-0.75 origin-top scale-y-0 bg-flame transition-transform duration-300 group-hover:scale-y-100"
-              aria-hidden="true"
-            ></span>
-            <span class="font-mono md:pt-2 text-[0.95rem] text-brand">
-              {{ String(i + 1).padStart(2, '0') }}
-            </span>
-            <div>
-              <p v-if="p.context" class="mb-2 font-mono text-xs tracking-wider text-flame-soft uppercase">
-                {{ p.context }}
-              </p>
-              <h3 class="mb-3 text-[clamp(1.4rem,2.6vw,2rem)] font-semibold tracking-tight">
-                {{ p.title }}
-              </h3>
-              <p class="max-w-160 text-base text-muted">{{ p.summary }}</p>
-              <ul class="mt-5 flex list-none flex-wrap gap-2 p-0">
-                <li
-                  v-for="t in p.tags"
-                  :key="t"
-                  class="rounded-full bg-fg/6 px-3 py-1 font-mono text-xs text-fg"
-                >
-                  {{ t }}
-                </li>
-              </ul>
+            <SiteFrame
+              v-if="p.frame !== 'phone'"
+              :image="p.image"
+              :url="p.url ?? p.live.href"
+              :alt="`Screenshot of ${p.title}`"
+              class="transition-[border-color] duration-150 group-hover:border-brand/40"
+            />
+            <div
+              v-else
+              class="relative aspect-16/10 overflow-hidden rounded-xl border border-line-soft bg-raise/60 transition-[border-color] duration-150 group-hover:border-brand/40"
+            >
+              <SiteFrame
+                :image="p.image"
+                :url="p.url ?? p.live.href"
+                :alt="`Screenshot of ${p.title}`"
+                frame="phone"
+                class="absolute top-[7%] left-1/2 h-[86%] -translate-x-1/2"
+              />
             </div>
-            <div class="flex flex-row flex-wrap items-center gap-6 pt-1.5 text-[0.95rem] md:flex-col md:items-end md:gap-3">
-              <a
-                :href="p.live.href"
-                target="_blank"
-                rel="noopener"
-                class="border-b border-current pb-0.5 font-semibold text-brand no-underline transition-colors hover:text-flame-soft"
+          </a>
+
+          <div class="md:col-span-5">
+            <p class="font-mono text-sm text-brand tabular-nums">
+              <span class="transition-colors group-hover/row:text-flame-soft">{{
+                String(i + 1).padStart(2, '0')
+              }}</span><template v-if="p.context"> · {{ p.context }}</template>
+            </p>
+            <h3 class="mt-3 text-[clamp(1.5rem,2.6vw,2rem)] leading-tight font-medium">{{ p.title }}</h3>
+            <p class="mt-4 text-muted">{{ p.summary }}</p>
+            <ul class="m-0 mt-6 flex list-none flex-wrap gap-2 p-0">
+              <li
+                v-for="t in p.tags"
+                :key="t"
+                class="rounded-md border border-line-soft bg-fg/4 px-2.5 py-1 font-mono text-xs text-fg"
               >
+                {{ t }}
+              </li>
+            </ul>
+            <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+              <a :href="p.live.href" target="_blank" rel="noopener" :class="textLink">
                 {{ p.live.label }} <span aria-hidden="true">↗</span>
               </a>
               <a
@@ -421,38 +435,38 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-
   </main>
 
   <!-- CONTACT -->
-  <footer
-    id="contact"
-    class="relative border-t border-line bg-[radial-gradient(ellipse_60%_80%_at_50%_120%,color-mix(in_srgb,var(--color-brand)_28%,transparent),transparent_70%)] pt-20 pb-10 text-center md:pt-28"
-  >
+  <footer id="contact" class="border-t border-line-soft pt-20 pb-8 md:pt-28">
     <div :class="wrap">
-      <p v-reveal :class="eyebrow">04 / Contact</p>
-      <h2 v-reveal class="text-[clamp(2.4rem,7vw,5rem)] leading-[1.12] font-semibold tracking-tighter">
-        Let's build something <span class="text-flame-soft">together.</span>
-      </h2>
-      <p v-reveal="80" class="mt-5 text-muted">
-        Got an internship, a project, or just want to say hi? Reach out.
-      </p>
+      <div class="grid items-start gap-12 md:grid-cols-[1fr_1.1fr] md:gap-16">
+        <div v-reveal>
+          <p :class="label">04 / Contact</p>
+          <h2 class="text-[clamp(2.25rem,6vw,4rem)] leading-[1.05] font-medium tracking-[-0.03em]">
+            Let's build something together<span class="text-flame-soft">.</span>
+          </h2>
+          <p class="mt-6 text-muted">Got an internship, a project, or just want to say hi? Reach out.</p>
+        </div>
 
-      <div v-reveal="160" class="mt-10 flex flex-wrap justify-center gap-3 sm:gap-4">
-        <a
-          v-for="s in [
-            { href: links.whatsapp, icon: 'fa-whatsapp', label: 'WhatsApp' },
-            { href: links.github, icon: 'fa-github', label: 'GitHub' },
-            { href: links.linkedin, icon: 'fa-linkedin', label: 'LinkedIn' },
-          ]"
-          :key="s.label"
-          :href="s.href"
-          target="_blank"
-          rel="noopener"
-          class="group inline-flex items-center gap-3 rounded-full border border-line bg-brand/5 px-6 py-3.5 font-medium no-underline transition hover:-translate-y-0.75 hover:border-flame hover:bg-flame/10"
-        >
-          <i :class="['fa-brands', s.icon, socialIcon]" aria-hidden="true"></i>
-          <span>{{ s.label }}</span>
-        </a>
+        <ul v-reveal="60" class="m-0 list-none border-t border-line-soft p-0 md:mt-10">
+          <li v-for="c in contacts" :key="c.label" class="border-b border-line-soft">
+            <a
+              :href="c.href"
+              target="_blank"
+              rel="noopener"
+              class="group flex items-center gap-4 py-5 text-fg no-underline transition-colors hover:text-brand"
+            >
+              <i :class="['fa-brands', c.icon, 'w-5 text-center text-lg text-muted transition-colors group-hover:text-brand']" aria-hidden="true"></i>
+              <span class="font-medium">{{ c.label }}</span>
+              <span class="ml-auto truncate font-mono text-sm text-muted">{{ c.handle }}</span>
+              <span class="text-muted transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true">↗</span>
+            </a>
+          </li>
+        </ul>
       </div>
 
-      <p class="mt-16 font-mono md:mt-24 text-xs text-muted">© {{ year }} Joe Abednego</p>
+      <div class="mt-20 flex items-center justify-between gap-4 border-t border-line-soft pt-6 font-mono text-xs text-muted md:mt-28">
+        <p>© {{ year }} Joe Abednego</p>
+        <a href="#top" class="text-muted no-underline transition-colors hover:text-fg">Back to top ↑</a>
+      </div>
     </div>
   </footer>
 </template>
