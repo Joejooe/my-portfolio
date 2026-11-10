@@ -2,38 +2,64 @@ export interface Project {
   title: string
   summary: string
   tags: string[]
+  context?: string
   live: { label: string; href: string }
-  repo: { label: string; href: string }
+  repo?: { label: string; href: string }
 }
 
 export const projects: Project[] = [
   {
-    title: 'Movie Database Website',
+    title: 'Customer Gathering Registration',
     summary:
-      'A React web app for searching movies, viewing details and marking favorites. It pulls real-time data from an external movie API, showing off REST API work and component-based architecture.',
-    tags: ['React', 'REST API', 'JavaScript'],
-    live: { label: 'Live demo', href: 'https://joejooe.github.io/movie-web-project' },
-    repo: { label: 'GitHub (private API key)', href: 'https://github.com/Joejooe/movie-web-project' },
+      'Event registration website for GPS.id corporate gatherings and business events, paired with an admin dashboard for QR code ticket scanning, attendee validation and attendance tracking.',
+    tags: ['Vue.js', 'Tailwind CSS', 'REST API'],
+    context: 'Built at Superspring',
+    live: { label: 'Visit site', href: 'https://gps.id/custgathering/' },
   },
   {
-    title: 'Mini Desktop Simulation',
+    title: 'Dekka Live Product Showcase',
     summary:
-      'A desktop environment built with Java and JavaFX for a university project. It ships Chrume (a mock browser with preset sites like RUtube.net and RUtify.net), a Notepad, a file manager and a mini photo editor — exploring UI design, state management and file handling.',
-    tags: ['Java', 'JavaFX', 'UI Design'],
-    live: {
-      label: 'View project',
-      href: 'https://drive.google.com/file/d/1jaL5_onnQe5S3beRoZ8GEYBGevuU0rsQ/view?usp=sharing',
-    },
-    repo: { label: 'GitHub', href: 'https://github.com/Joejooe/ApplicationProgram' },
+      'A new product showcase section built for the Dekka Live product launch, presenting the product and its features on the Dekka website.',
+    tags: ['Vue.js', 'Tailwind CSS', 'Responsive'],
+    context: 'Built at Superspring',
+    live: { label: 'Visit site', href: 'https://dekka.id/dekkalive' },
   },
   {
-    title: 'Short Film Promotion Website',
+    title: 'Dekka Bio Link Page',
     summary:
-      "A static, responsive site built with only HTML and CSS to promote a university short film. The focus is visual design and layout: synopsis, poster and credits in a clean format.",
-    tags: ['HTML', 'CSS', 'Responsive'],
-    live: { label: 'Live demo', href: 'https://joejooe.github.io/WebsitePromosi' },
-    repo: { label: 'GitHub', href: 'https://github.com/Joejooe/WebsitePromosi' },
+      "Fixed and improved Dekka's Linktree-style landing page, the hub that routes visitors from social media to the company's products and channels.",
+    tags: ['HTML', 'JavaScript', 'Tailwind CSS'],
+    context: 'Built at Superspring',
+    live: { label: 'Visit site', href: 'https://www.dekka.id/bio/' },
   },
+  // Personal projects (hidden for now)
+  // {
+  //   title: 'Movie Database Website',
+  //   summary:
+  //     'A React web app for searching movies, viewing details and marking favorites. It pulls real-time data from an external movie API, showing off REST API work and component-based architecture.',
+  //   tags: ['React', 'REST API', 'JavaScript'],
+  //   live: { label: 'Live demo', href: 'https://joejooe.github.io/movie-web-project' },
+  //   repo: { label: 'GitHub (private API key)', href: 'https://github.com/Joejooe/movie-web-project' },
+  // },
+  // {
+  //   title: 'Mini Desktop Simulation',
+  //   summary:
+  //     'A desktop environment built with Java and JavaFX for a university project. It ships Chrume (a mock browser with preset sites like RUtube.net and RUtify.net), a Notepad, a file manager and a mini photo editor — exploring UI design, state management and file handling.',
+  //   tags: ['Java', 'JavaFX', 'UI Design'],
+  //   live: {
+  //     label: 'View project',
+  //     href: 'https://drive.google.com/file/d/1jaL5_onnQe5S3beRoZ8GEYBGevuU0rsQ/view?usp=sharing',
+  //   },
+  //   repo: { label: 'GitHub', href: 'https://github.com/Joejooe/ApplicationProgram' },
+  // },
+  // {
+  //   title: 'Short Film Promotion Website',
+  //   summary:
+  //     "A static, responsive site built with only HTML and CSS to promote a university short film. The focus is visual design and layout: synopsis, poster and credits in a clean format.",
+  //   tags: ['HTML', 'CSS', 'Responsive'],
+  //   live: { label: 'Live demo', href: 'https://joejooe.github.io/WebsitePromosi' },
+  //   repo: { label: 'GitHub', href: 'https://github.com/Joejooe/WebsitePromosi' },
+  // },
 ]
 
 export const links = {

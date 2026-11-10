@@ -378,6 +378,9 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-
               {{ String(i + 1).padStart(2, '0') }}
             </span>
             <div>
+              <p v-if="p.context" class="mb-2 font-mono text-xs tracking-wider text-flame-soft uppercase">
+                {{ p.context }}
+              </p>
               <h3 class="mb-3 text-[clamp(1.4rem,2.6vw,2rem)] font-semibold tracking-tight">
                 {{ p.title }}
               </h3>
@@ -402,6 +405,7 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-
                 {{ p.live.label }} <span aria-hidden="true">↗</span>
               </a>
               <a
+                v-if="p.repo"
                 :href="p.repo.href"
                 target="_blank"
                 rel="noopener"
