@@ -15,9 +15,9 @@ Dark theme built on two loud colors and an accent:
 
 | Role   | Color     |
 | ------ | --------- |
-| Base   | `#02070A` |
-| Loud   | `#0297DE` |
-| Accent | `#FC734D` |
+| Base   | `#03203D` |
+| Loud   | `#EB2F33` |
+| Accent | `#639CC5` |
 
 The palette, fonts (Space Grotesk, JetBrains Mono) and animations are defined in the `@theme` block of `src/style.css`.
 
