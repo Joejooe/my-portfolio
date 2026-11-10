@@ -58,6 +58,8 @@ export const internship = {
         'Built features for delivery photo documentation and operational expense reporting.',
         'Developed truck maintenance and routine inspection tracking features.',
       ],
+      note: 'I built a demo version of this driver app, check out the source code on GitHub.',
+      link: { label: 'View on GitHub', href: 'https://github.com/Joejooe/demo-driver-apps' },
     },
     {
       title: 'Event Management System',

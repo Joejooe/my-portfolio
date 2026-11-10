@@ -1,14 +1,19 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-ink: #02070a;
-  --color-raise: #07121a;
-  --color-brand: #0297de;
-  --color-flame: #fc734d;
-  --color-fg: #e6f1f7;
-  --color-muted: #8da4b2;
-  --color-line: rgb(2 151 222 / 0.22);
-  --color-line-soft: rgb(230 241 247 / 0.08);
+  /* ===== PALETTE: edit only these 4 colors; everything else is derived ===== */
+  --color-ink: #03203d; /* page background */
+  --color-brand: #639cc5; /* primary accent */
+  --color-flame: #eb2f33; /* secondary accent */
+  --color-fg: #fefefe; /* main text */
+  /* ===== derived (don't need to touch) ===== */
+  --color-raise: color-mix(in srgb, var(--color-brand) 10%, var(--color-ink)); /* cards */
+  --color-deep: color-mix(in srgb, var(--color-brand) 18%, var(--color-ink)); /* gradients */
+  --color-muted: color-mix(in srgb, var(--color-fg) 62%, var(--color-ink)); /* secondary text */
+  /* flame lightened for small text so it stays readable (WCAG AA) on dark backgrounds */
+  --color-flame-soft: color-mix(in srgb, var(--color-flame) 72%, var(--color-fg));
+  --color-line: color-mix(in srgb, var(--color-brand) 22%, transparent);
+  --color-line-soft: color-mix(in srgb, var(--color-fg) 8%, transparent);
 
   --font-sans: 'Space Grotesk', system-ui, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
@@ -24,25 +29,25 @@
   }
   @keyframes pulse-ring {
     0% {
-      box-shadow: 0 0 0 0 rgb(252 115 77 / 0.6);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-flame) 60%, transparent);
     }
     100% {
-      box-shadow: 0 0 0 10px rgb(252 115 77 / 0);
+      box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-flame) 0%, transparent);
     }
   }
 }
 
 @layer base {
   html {
-    @apply scroll-smooth bg-ink font-sans text-[18px] leading-relaxed text-fg antialiased motion-reduce:scroll-auto;
+    @apply scroll-smooth bg-ink font-sans text-[16px] sm:text-[18px] leading-relaxed text-fg antialiased motion-reduce:scroll-auto;
     scroll-padding-top: 5rem;
     color-scheme: dark;
   }
   body {
-    @apply min-h-svh overflow-x-hidden;
+    @apply min-h-svh overflow-x-clip;
   }
   ::selection {
-    @apply bg-flame text-ink;
+    @apply bg-flame text-fg;
   }
   :focus-visible {
     @apply rounded outline-2 outline-offset-2 outline-flame;
