@@ -341,8 +341,8 @@ const socialIcon = 'text-xl text-brand transition-colors group-hover:text-flame-
             :key="g.label"
             class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line-soft pb-5"
           >
-            <dt class="w-28 shrink-0 text-sm text-muted">{{ g.label }}</dt>
-            <dd class="m-0 flex flex-wrap gap-2">
+            <dt class="w-28 shrink-0 pt-1.5 text-sm text-muted">{{ g.label }}</dt>
+            <dd class="m-0 flex min-w-0 flex-1 flex-wrap gap-2">
               <span
                 v-for="s in g.items"
                 :key="s"
