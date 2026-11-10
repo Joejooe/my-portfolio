@@ -219,7 +219,7 @@ const featured = projects[0]!
         </h1>
         <p class="mt-6 max-w-xl text-lg text-muted">
           Computer Science student at <span class="text-fg">BINUS University</span>. I spent a year at
-          <span class="text-fg">Superspring</span> building live websites with Vue, TypeScript and
+          <span class="text-fg">Superspring</span> building live websites with Vue, React, TypeScript and
           Tailwind CSS.
         </p>
         <div class="mt-8 flex flex-wrap gap-3 max-[400px]:flex-col">
@@ -267,8 +267,8 @@ const featured = projects[0]!
         <div v-reveal="60" class="grid gap-4 text-muted">
           <p>
             Hi! I'm Joe, a third-year Computer Science student at BINUS University who loves building
-            interactive and user-friendly web experiences. Vue is my main framework, and I'm also
-            learning React and exploring modern front-end development practices.
+            interactive and user-friendly web experiences. Vue is my main framework, and I've also built with React while
+            exploring modern front-end development practices.
           </p>
           <p>
             I'm looking for internship opportunities where I can grow through hands-on experience and

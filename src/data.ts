@@ -33,7 +33,7 @@ export const projects: Project[] = [
     title: 'Dekka Live Product Showcase',
     summary:
       'A new product showcase section built for the Dekka Live product launch, presenting the product and its features on the Dekka website.',
-    tags: ['Vue.js', 'Tailwind CSS', 'Responsive'],
+    tags: ['React', 'Tailwind CSS', 'Responsive'],
     context: 'Built at Superspring',
     live: { label: 'Visit site', href: 'https://dekka.id/dekkalive' },
     image: dekkaLiveShot,
@@ -99,7 +99,7 @@ export const internship = {
   department: 'Products & Solutions Department',
   duration: '1-Year Internship',
   summary:
-    'Contributed to the development, maintenance, and improvement of various company websites and web applications. Worked primarily with Vue.js, JavaScript, TypeScript, and Tailwind CSS while collaborating with backend developers on API integration and application functionality.',
+    'Contributed to the development, maintenance, and improvement of various company websites and web applications. Worked primarily with Vue.js, React, JavaScript, TypeScript, and Tailwind CSS while collaborating with backend developers on API integration and application functionality.',
   highlights: [
     {
       title: 'Driver App (Progressive Web Application)',
@@ -132,7 +132,7 @@ export const internship = {
 }
 
 export const skillGroups = [
-  { label: 'Frameworks', items: ['Vue.js', 'Nuxt.js'] },
+  { label: 'Frameworks', items: ['Vue.js', 'React', 'Nuxt.js'] },
   { label: 'Languages', items: ['JavaScript', 'TypeScript'] },
   { label: 'Styling', items: ['Tailwind CSS'] },
   { label: 'Integration', items: ['REST API Integration', 'Frontend-Backend Collaboration'] },
